@@ -1,0 +1,46 @@
+volumes:
+  celerybeat_data: {}
+
+services:
+  litestar:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-litestar-project:latest
+    command: litestar run --host 0.0.0.0 --port 80
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    # Optional) define a health check url for the Litestar application
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:80/health || exit 1" ]
+      start_period: 30s
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Optional) use this if you need celery
+  celery-worker:
+    image: my-litestar-project:latest
+    command: celery -A config.celery worker -l info
+    env_file:
+      - .env
+    # Ensure these services start before the celery worker
+    depends_on:
+      - litestar
+    restart: unless-stopped
+
+  # Optional) use this if you need celery beat
+  celery-beat:
+    image: my-litestar-project:latest
+    command: celery -A config.celery beat -l info
+    env_file:
+      - .env
+    # Ensure these services start before the celery beat
+    depends_on:
+      - litestar
+    volumes:
+      - celerybeat_data:/app/celerybeat-schedule
+    restart: unless-stopped

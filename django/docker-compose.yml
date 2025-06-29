@@ -1,0 +1,47 @@
+volumes:
+  celerybeat_data: {}
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-django-project:latest
+    # Run Django with Gunicorn, Uvicorn, Granian & etc
+    command: granian --interface wsgi --host 0.0.0.0 --port 80 config.wsgi:application
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    # Optional) define a health check url for the Django application
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:80/health || exit 1" ]
+      start_period: 30s
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Optional) use this if you need celery
+  celery-worker:
+    image: my-django-project:latest
+    command: celery -A config.celery worker -l info
+    env_file:
+      - .env
+    # Ensure these services start before the celery worker
+    depends_on:
+      - django
+    restart: unless-stopped
+
+  # Optional) use this if you need celery beat
+  celery-beat:
+    image: my-django-project:latest
+    command: celery -A config.celery beat -l info
+    env_file:
+      - .env
+    # Ensure these services start before the celery beat
+    depends_on:
+      - django
+    volumes:
+      - celerybeat_data:/app/celerybeat-schedule
+    restart: unless-stopped
