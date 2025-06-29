@@ -2,8 +2,7 @@
 FROM ghcr.io/astral-sh/uv:bookworm-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
+ENV PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 \
     PATH="/app/.venv/bin:$PATH"
 
