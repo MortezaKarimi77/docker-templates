@@ -100,18 +100,18 @@ This option uses the `supervisord.conf` to manage all processes within a single 
     Replace `your-django-app` with a meaningful name for your image.
 
 3.  **Run the Docker Container:**
-    * **Run Django with or without Celery (Default `CMD` from Dockerfile):**
+    * **Run Django with or without Celery (Using Dockerfile's default `CMD`):**
         ```bash
         docker run -d -p 80:80 --name my-django-full-app your-django-app:latest
         ```
 
-    * **Run Django Only (Override default `CMD` from Dockerfile - bypasses Supervisord):**
+    * **Run Django Only (Override Dockerfile's default `CMD` - bypasses Supervisord):**
         ```bash
         docker run -d -p 80:80 --name my-django-full-app your-django-app:latest \
             granian --interface wsgi --host 0.0.0.0 --port 80 config.wsgi:application
         ```
 
-    * **Run Django with Celery (Override default `CMD` from Dockerfile - bypasses Django only):**
+    * **Run Django with Celery (Override Dockerfile's default `CMD` - bypasses Django only):**
         ```bash
         docker run -d -p 80:80 --name my-django-full-app your-django-app:latest \
             supervisord -c /app/supervisord.conf
@@ -178,18 +178,18 @@ The `litestar/Dockerfile` and `litestar/docker-compose.yml` are configured simil
     Replace `your-litestar-app` with a meaningful name for your image.
 
 4.  **Run the Docker Container:**
-    * **Run Litestar with Celery (Default `CMD` from Dockerfile):**
+    * **Run Litestar with Celery (Dockerfile's default `CMD`):**
         ```bash
         docker run -d -p 80:80 --name my-litestar-full-app your-litestar-app:latest
         ```
 
-    * **Run Litestar Only (Override default `CMD` from Dockerfile - bypasses Supervisord):**
+    * **Run Litestar Only (Override Dockerfile's default `CMD` - bypasses Supervisord):**
         ```bash
         docker run -d -p 80:80 --name my-litestar-full-app your-litestar-app:latest \
             litestar run --host 0.0.0.0 --port 80
         ```
 
-    * **Run Litestar with Celery (Override default `CMD` from Dockerfile - bypasses Django only):**
+    * **Run Litestar with Celery (Override Dockerfile's default `CMD` - bypasses Django only):**
         ```bash
         docker run -d -p 80:80 --name my-litestar-full-app your-litestar-app:latest \
             supervisord -c /app/supervisord.conf
